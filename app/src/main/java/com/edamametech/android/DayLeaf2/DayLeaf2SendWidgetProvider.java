@@ -28,21 +28,16 @@ public class DayLeaf2SendWidgetProvider extends DayLeaf2WidgetProvider {
         path = new DayLeaf2Util.FilePath(new Date());
         File outputFile;
         outputFile = new File(path.directory(), path.filename());
-        Log.d("DayLeaf2", outputFile.toString());
         if (!outputFile.exists()) {
             try {
                 FileWriter fileWriter;
-                Log.d("DayLeaf2", "Creating file");
                 fileWriter = new FileWriter(outputFile, false);
-                fileWriter.write("Hello World\n");
+                fileWriter.write(path.textTemplate());
                 fileWriter.close();
-                Log.d("DayLeaf2", "Created file");
             }catch(java.io.IOException e) {
                 Log.d("DayLeaf2", e.toString());
                 Toast.makeText(context, "Could not create " + path, Toast.LENGTH_LONG);
             }
-        } else {
-            Log.d("DayLeaf2", "File exists");
         }
         intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");

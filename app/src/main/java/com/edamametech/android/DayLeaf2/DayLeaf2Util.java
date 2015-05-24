@@ -24,8 +24,7 @@ public class DayLeaf2Util {
     @SuppressLint("SimpleDateFormat")
     static public class FilePath {
         private final String filenameFormat = "yyMMdd'.txt'";
-        private final SimpleDateFormat filenameFormatter = new SimpleDateFormat(filenameFormat,
-                Locale.US);
+        private final String textTemplateFormat = "yyyy-MM-dd\n\n";
         Date date;
 
         FilePath(Date d) {
@@ -38,7 +37,11 @@ public class DayLeaf2Util {
         }
 
         public String filename() {
-            return filenameFormatter.format(date);
+            return new SimpleDateFormat(filenameFormat, Locale.US).format(date);
+        }
+
+        public String textTemplate() {
+            return new SimpleDateFormat(textTemplateFormat, Locale.US).format(date);
         }
 
         String directoryName() {
