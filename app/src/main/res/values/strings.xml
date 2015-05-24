@@ -5,5 +5,9 @@
     <string name="send_widget_name">DayLeaf2 - Create</string>
     <string name="widget_label">DayLeaf2</string>
     <string name="send_content_description">Create</string>
+    <string name="title_activity_text_edit">Edit Text</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 
 </resources>
