@@ -32,12 +32,12 @@ public class DayLeaf2Util {
             date = d;
         }
 
-        String directory() {
+        public String directory() {
             return Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS).toString();
         }
 
-        String filename() {
+        public String filename() {
             return filenameFormatter.format(date);
         }
 
