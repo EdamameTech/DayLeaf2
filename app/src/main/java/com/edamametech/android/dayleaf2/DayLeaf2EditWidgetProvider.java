@@ -13,6 +13,7 @@ the License, or (at your option) any later version.
 package com.edamametech.android.DayLeaf2;
 
 import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 
@@ -22,8 +23,9 @@ public class DayLeaf2EditWidgetProvider extends DayLeaf2WidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         path = new DayLeaf2Util.FilePath(new Date());
-        intent = new Intent(Intent.ACTION_EDIT);
+        intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(path.uri(), "text/plain");
+        intent.setComponent(ComponentName.unflattenFromString("com.dropbox.android/.activity.TextEditActivity"));
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         layout = R.layout.edit;
         super.onUpdate(context, appWidgetManager, appWidgetIds);
