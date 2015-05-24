@@ -37,7 +37,6 @@ public class DayLeaf2SendWidgetProvider extends DayLeaf2WidgetProvider {
                 fileWriter.close();
             }catch(java.io.IOException e) {
                 Log.d("DayLeaf2", e.toString());
-                Toast.makeText(context, "Could not create " + path, Toast.LENGTH_LONG);
             }
         }
         intent = new Intent(Intent.ACTION_SEND);
