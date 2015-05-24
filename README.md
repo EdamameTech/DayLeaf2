@@ -1,7 +1,7 @@
 DayLeaf
 =======
 
-DayLeaf memo launcher - Android widgets to create text files for daily memo
+DayLeaf memo launcher - Android widget to create text files for daily memo
 
 This application provides an easy way, as home screen widgets, to create,
 edit, and send text files in a daily basis to create memo on everyday life.
