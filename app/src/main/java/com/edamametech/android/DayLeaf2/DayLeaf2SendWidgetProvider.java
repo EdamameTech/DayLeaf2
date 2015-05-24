@@ -13,6 +13,7 @@ the License, or (at your option) any later version.
 package com.edamametech.android.DayLeaf2;
 
 import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -42,6 +43,7 @@ public class DayLeaf2SendWidgetProvider extends DayLeaf2WidgetProvider {
         intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_STREAM, path.uri());
+        intent.setComponent(ComponentName.unflattenFromString("com.dropbox.android/.activity.DropboxSendTo"));
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         layout = R.layout.send;
         super.onUpdate(context, appWidgetManager, appWidgetIds);
