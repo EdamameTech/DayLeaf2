@@ -2,10 +2,8 @@
 <resources>
 
     <string name="app_name">DayLeaf2</string>
-    <string name="edit_widget_name">DayLeaf2 - Edit</string>
-    <string name="send_widget_name">DayLeaf2 - Send</string>
+    <string name="send_widget_name">DayLeaf2 - Create</string>
     <string name="widget_label">DayLeaf2</string>
-    <string name="edit_content_description">Edit</string>
-    <string name="send_content_description">Send</string>
+    <string name="send_content_description">Create</string>
 
 </resources>
