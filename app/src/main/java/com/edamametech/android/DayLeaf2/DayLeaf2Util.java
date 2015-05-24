@@ -44,11 +44,6 @@ public class DayLeaf2Util {
             return new SimpleDateFormat(textTemplateFormat, Locale.US).format(date);
         }
 
-        String directoryName() {
-            String[] directoryNameAry = directory().split("/");
-            return directoryNameAry[directoryNameAry.length - 1];
-        }
-
         Uri uri() {
             return Uri.parse("file://" + directory() + "/" + filename());
         }

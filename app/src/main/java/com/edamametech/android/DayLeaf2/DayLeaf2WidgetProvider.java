@@ -32,8 +32,7 @@ public class DayLeaf2WidgetProvider extends AppWidgetProvider {
         for (int i = 0; i < NWidgets; i++) {
             int appWidgetId = appWidgetIds[i];
             views.setOnClickPendingIntent(R.id.widget_button, pendingIntent);
-            views.setTextViewText(R.id.widget_label, path.directoryName() + "/\n"
-                    + path.filename());
+            views.setTextViewText(R.id.widget_label, path.filename());
             views.setOnClickPendingIntent(R.id.widget_label, pendingIntent);
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }
