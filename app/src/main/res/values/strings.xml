@@ -1,3 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DayLeaf2</string>
+
+    <string name="app_name">DayLeaf</string>
+    <string name="edit_widget_name">DayLeaf - Edit</string>
+    <string name="send_widget_name">DayLeaf - Send</string>
+    <string name="widget_label">DayLeaf</string>
+    <string name="edit_content_description">Edit</string>
+    <string name="send_content_description">Send</string>
+
 </resources>
