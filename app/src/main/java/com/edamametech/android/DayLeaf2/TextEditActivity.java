@@ -13,6 +13,8 @@ the License, or (at your option) any later version.
 package com.edamametech.android.DayLeaf2;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -58,6 +60,10 @@ public class TextEditActivity extends AppCompatActivity {
 
         public String textTemplate() {
             return new SimpleDateFormat(getString(R.string.text_template_format), Locale.US).format(mDate);
+        }
+
+        public Uri uri() {
+            return Uri.parse("file://" + directory() + "/" + filename());
         }
 
     }
@@ -149,7 +155,13 @@ public class TextEditActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_send) {
-            Log.d(LogTag, "Menu send");
+            saveText();
+            Intent intent;
+            intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_STREAM, mTextDate.uri());
+            intent.putExtra(Intent.EXTRA_TEXT, mEditText.getText());
+            startActivity(intent);
             return true;
         }
 

@@ -15,7 +15,6 @@ Daily files are created under Download/DayLeaf2 directory.
 
 Todos
 -----
-- Send button
 - Previous/next day arrows
 
 License terms
