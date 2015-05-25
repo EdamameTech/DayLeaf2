@@ -18,6 +18,8 @@ import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
@@ -69,6 +71,7 @@ public class TextEditActivity extends AppCompatActivity {
     }
 
     private EditText mEditText;
+    boolean mTextEdited;    // true when needs to be saved
     private TextDate mTextDate;
 
     private void loadText() {
@@ -87,11 +90,13 @@ public class TextEditActivity extends AppCompatActivity {
                 }
                 mEditText.setText(stringBuilder.toString());
                 bufferedReader.close();
+                mTextEdited = false;
             } catch (IOException e) {
                 Log.e(LogTag, e.toString());
             }
         } else {
             mEditText.setText(mTextDate.textTemplate());
+            mTextEdited = true;
         }
     }
 
@@ -107,6 +112,7 @@ public class TextEditActivity extends AppCompatActivity {
             fileWriter = new FileWriter(file);
             fileWriter.write(mEditText.getText().toString());
             fileWriter.close();
+            mTextEdited = false;
         } catch (IOException e) {
             Log.e(LogTag, e.toString());
         }
@@ -119,8 +125,26 @@ public class TextEditActivity extends AppCompatActivity {
 
         mTextDate = new TextDate(new Date());
         mEditText = (EditText) findViewById(R.id.edit_text);
-        loadText();
         setTitle(mTextDate.filename());
+
+        mEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // do nothing
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // do nothing
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mTextEdited = true;
+            }
+        });
+
+        loadText();
 
         mEditText.requestFocus();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -132,7 +156,7 @@ public class TextEditActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        saveText();
+        if (mTextEdited) saveText();
     }
 
     @Override
