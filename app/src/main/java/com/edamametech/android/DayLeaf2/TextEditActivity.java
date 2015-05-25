@@ -236,8 +236,8 @@ public class TextEditActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_text_edit, menu);
 
-        menu.findItem(R.id.action_previous_date).setEnabled(mTextDate.previousDate() != null);
-        menu.findItem(R.id.action_next_date).setEnabled(mTextDate.nextDate() != null);
+        menu.findItem(R.id.action_edit_previous_date).setEnabled(mTextDate.previousDate() != null);
+        menu.findItem(R.id.action_edit_next_date).setEnabled(mTextDate.nextDate() != null);
         return true;
     }
 
@@ -260,14 +260,19 @@ public class TextEditActivity extends AppCompatActivity {
             return true;
         }
 
-        if (id == R.id.action_previous_date && mTextDate.previousDate() != null) {
+        if (id == R.id.action_edit_previous_date && mTextDate.previousDate() != null) {
             saveText();
             loadContent(mTextDate.previousDate());
         }
 
-        if (id == R.id.action_next_date && mTextDate.nextDate() != null) {
+        if (id == R.id.action_edit_next_date && mTextDate.nextDate() != null) {
             saveText();
             loadContent(mTextDate.nextDate());
+        }
+
+        if (id == R.id.action_edit_today) {
+            saveText();
+            loadContent(new Date());
         }
 
         return super.onOptionsItemSelected(item);

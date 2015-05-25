@@ -3,18 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.edamametech.android.DayLeaf2.TextEditActivity">
     <item
+        android:id="@+id/action_edit_previous_date"
+        android:icon="@android:drawable/ic_media_rew"
+        android:title="Edit Previous Date"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_edit_next_date"
+        android:icon="@android:drawable/ic_media_ff"
+        android:title="Edit Next Date"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_edit_today"
+        android:icon="@android:drawable/ic_media_next"
+        android:title="Edit Today"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_send"
         android:icon="@android:drawable/ic_menu_send"
         android:title="@string/action_send"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/action_previous_date"
-        android:icon="@android:drawable/ic_media_rew"
-        android:title="Previous Date"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/action_next_date"
-        android:icon="@android:drawable/ic_media_ff"
-        android:title="Next Date"
         app:showAsAction="ifRoom" />
 </menu>
