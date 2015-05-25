@@ -11,19 +11,115 @@ import android.widget.EditText;
 
 import com.edamametech.android.DayLeaf2.R;
 
+import android.os.Environment;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import android.util.Log;
+
 public class TextEditActivity extends AppCompatActivity {
 
+    private static final String LogTag = "DayLeaf2";
+
+    private class TextDate {
+        Date mDate;
+
+        TextDate(Context c, Date d) {
+            mDate = d;
+        }
+
+        public final String directory() {
+            return Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS).toString() + "/" + getString(R.string.app_name);
+        }
+
+        public final String filename() {
+            return new SimpleDateFormat(getString(R.string.filename_format), Locale.US).format(mDate);
+        }
+
+        public String textTemplate() {
+            return new SimpleDateFormat(getString(R.string.text_template_format), Locale.US).format(mDate);
+        }
+
+    }
+
+    private Context mContext;
     private EditText mEditText;
+    private TextDate mTextDate;
+
+    private void loadText() {
+        File file;
+        file = new File(mTextDate.directory(), mTextDate.filename());
+        if (file.exists() && file.canRead()) {
+            try {
+                BufferedReader bufferedReader;
+                bufferedReader=new BufferedReader(new FileReader(file));
+                StringBuilder stringBuilder;
+                stringBuilder = new StringBuilder();
+                String line;
+                while((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line);
+                    stringBuilder.append("\n");
+                }
+                mEditText.setText(stringBuilder.toString());
+                bufferedReader.close();
+            } catch (IOException e) {
+                Log.e(LogTag, e.toString());
+            }
+        } else {
+            mEditText.setText(mTextDate.textTemplate());
+        }
+    }
+
+    private void saveText() {
+        try {
+            File appdir;
+            appdir = new File(mTextDate.directory());
+            if (!appdir.exists())
+                appdir.mkdir();
+            File file;
+            file = new File(mTextDate.directory(), mTextDate.filename());
+            FileWriter fileWriter;
+            fileWriter = new FileWriter(file);
+            fileWriter.write(mEditText.getText().toString());
+            fileWriter.close();
+        } catch (IOException e) {
+            Log.e(LogTag, e.toString());
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text_edit);
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mContext = getBaseContext();
+        mTextDate = new TextDate(mContext, new Date());
         mEditText = (EditText) findViewById(R.id.edit_text);
+        loadText();
+
         mEditText.requestFocus();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        saveText();
     }
 
     @Override
