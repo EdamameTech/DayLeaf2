@@ -1,3 +1,15 @@
+/*
+
+Copyright (C) 2015 Green Soybean Technologies, LLC
+<edamametech@gmail.com>
+
+This program is free software: you can redistribute it and/or
+modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
+
+ */
+
 package com.edamametech.android.DayLeaf2;
 
 import android.content.Context;
@@ -60,11 +72,11 @@ public class TextEditActivity extends AppCompatActivity {
         if (file.exists() && file.canRead()) {
             try {
                 BufferedReader bufferedReader;
-                bufferedReader=new BufferedReader(new FileReader(file));
+                bufferedReader = new BufferedReader(new FileReader(file));
                 StringBuilder stringBuilder;
                 stringBuilder = new StringBuilder();
                 String line;
-                while((line = bufferedReader.readLine()) != null) {
+                while ((line = bufferedReader.readLine()) != null) {
                     stringBuilder.append(line);
                     stringBuilder.append("\n");
                 }

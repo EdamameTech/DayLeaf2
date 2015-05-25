@@ -1,23 +1,22 @@
 DayLeaf
 =======
 
-DayLeaf memo launcher - Android widget to create text files for daily memo
+DayLeaf memo editor - creates files for daily memo
 
-This application provides an easy way, as home screen widgets, to create,
-edit, and send text files in a daily basis to create memo on everyday life.
+This application provides an easy way to create and edit
+files in a daily basis to create memo on everyday life.
 
 NOTE - Under construction
 
 Usage
 -----
-This application only provides widgets that work as short-cuts to
-- start editing a text file and
-- send the text file.
+Launch the app and edit text.
+Daily files are created under Download/DayLeaf2 directory.
 
-Long tap home screen to add the widget, `DayLeaf2 - Create`
-for a short cut to add a file with dated file name into your 
-that shares files among devices, like
-[Dropbox](https://play.google.com/store/apps/details?id=com.dropbox.android).
+Todos
+-----
+- Send button
+- Previous/next day arrows
 
 License terms
 -------------
