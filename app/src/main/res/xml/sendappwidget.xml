@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:initialLayout="@layout/send"
-    android:minHeight="72dp"
-    android:minWidth="72dp"
-    android:previewImage="@android:drawable/ic_menu_send"
-    android:updatePeriodMillis="7200000" />
