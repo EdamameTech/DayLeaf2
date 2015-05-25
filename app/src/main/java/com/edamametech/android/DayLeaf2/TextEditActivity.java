@@ -33,8 +33,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
@@ -45,10 +48,50 @@ public class TextEditActivity extends AppCompatActivity {
     private static final String LogTag = "DayLeaf2";
 
     private class TextDate {
-        Date mDate;
+        private Date mDate;
+        private Date mPreviousDate;
+        private Date mNextDate;
 
         TextDate(Date d) {
             mDate = d;
+            mPreviousDate = null;
+            mNextDate = null;
+
+            File app_directory;
+            app_directory = new File(directory());
+            String[] filenames;
+            filenames = app_directory.list();
+            if (filenames != null && filenames.length > 1) {
+                ArrayList<Date> dates;
+                dates = new ArrayList<>(filenames.length);
+                final SimpleDateFormat filename_format;
+                filename_format = new SimpleDateFormat(getString(R.string.filename_format));
+                for(String filename: filenames){
+                    try {
+                        dates.add(filename_format.parse(filename));
+                    } catch(java.text.ParseException e) {
+                        // ignore
+                    }
+                }
+                Collections.sort(dates);
+
+                Date current_date;
+                current_date = new Date(0);
+                try {
+                    current_date = filename_format.parse(filename());
+                } catch(java.text.ParseException e) {
+                    // should never occur
+                }
+                int current_index = -1;
+                for(Integer i = 0; i < dates.size(); i++) {
+                    if (current_date.compareTo(dates.get(i)) == 0) {
+                        current_index = i;
+                        break;
+                    }
+                }
+                if (current_index > 0) mPreviousDate = dates.get(current_index - 1);
+                if (current_index >= 0 && current_index < dates.size() - 1) mNextDate = dates.get(current_index + 1);
+            }
         }
 
         public final String directory() {
@@ -72,6 +115,9 @@ public class TextEditActivity extends AppCompatActivity {
             return Uri.parse("file://" + directory() + "/" + filename());
         }
 
+        // Date with existing file or null
+        public Date previousDate() { return mPreviousDate; }
+        public Date nextDate() { return mNextDate; }
     }
 
     private EditText mEditText;
@@ -140,14 +186,11 @@ public class TextEditActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_text_edit);
-
-        mTextDate = new TextDate(new Date());
+    protected void loadContent(Date date) {
+        mTextDate = new TextDate(date);
         mEditText = (EditText) findViewById(R.id.edit_text);
         setTitle(mTextDate.filename());
+        this.invalidateOptionsMenu();
 
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -175,6 +218,13 @@ public class TextEditActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_text_edit);
+        loadContent(new Date());
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
 
@@ -185,6 +235,9 @@ public class TextEditActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_text_edit, menu);
+
+        menu.findItem(R.id.action_previous_date).setEnabled(mTextDate.previousDate() != null);
+        menu.findItem(R.id.action_next_date).setEnabled(mTextDate.nextDate() != null);
         return true;
     }
 
@@ -205,6 +258,16 @@ public class TextEditActivity extends AppCompatActivity {
             intent.putExtra(Intent.EXTRA_TEXT, mEditText.getText());
             startActivity(intent);
             return true;
+        }
+
+        if (id == R.id.action_previous_date && mTextDate.previousDate() != null) {
+            saveText();
+            loadContent(mTextDate.previousDate());
+        }
+
+        if (id == R.id.action_next_date && mTextDate.nextDate() != null) {
+            saveText();
+            loadContent(mTextDate.nextDate());
         }
 
         return super.onOptionsItemSelected(item);
