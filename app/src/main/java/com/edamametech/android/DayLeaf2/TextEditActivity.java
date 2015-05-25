@@ -150,7 +150,8 @@ public class TextEditActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_send) {
+            Log.d(LogTag, "Menu send");
             return true;
         }
 

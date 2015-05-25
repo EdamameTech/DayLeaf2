@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">DayLeaf2</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_send">Send</string>
     <string name="filename_format">yyMMdd\'.txt\'</string>
     <string name="text_template_format">yyyy-MM-dd\n\n</string>
 </resources>
