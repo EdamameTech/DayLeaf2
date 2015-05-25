@@ -1,28 +1,22 @@
-DayLeaf
-=======
-
-DayLeaf memo editor - creates files for daily memo
-
-This application provides an easy way to create and edit
-files in a daily basis to create memo on everyday life.
-
-NOTE - Under construction
+DayLeaf2 memo editor
+====================
+An easy way to create and edit files in a daily basis to create memo on
+everyday life.
 
 Usage
 -----
 Launch the app and edit text.
-Daily files are created under Download/DayLeaf2 directory.
 
-Todos
------
-- Previous/next day arrows
+Use action menu to navigate between days and send Memo to other apps.
+
+Daily files are created under Download/DayLeaf2 directory.
 
 License terms
 -------------
-DayLeaf memo launcher - Android widgets to create text files for
-daily memo
+DayLeaf2 memo editor - An Android application to create and edit
+text files for daily memo
 
-Copyright (C) 2014 Green Soybean Technologies, LLC
+Copyright (C) 2015 Green Soybean Technologies, LLC
 <edamametech at gmail.com>
 
 This program is free software: you can redistribute it and/or
@@ -40,5 +34,5 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see
 <http://www.gnu.org/licenses/>.
 
-The source code for this program will be able to be found through
-<http://edamametech.com/android/DayLeaf/>.
+The source code for this program can be found through
+<http://edamametech.com/android/DayLeaf2/>.
