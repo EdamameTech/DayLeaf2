@@ -94,8 +94,8 @@ public class TextEditActivity extends AppCompatActivity {
         try {
             File appdir;
             appdir = new File(mTextDate.directory());
-            if (!appdir.exists())
-                appdir.mkdir();
+            if (!appdir.exists() && !appdir.mkdir())
+                Log.e(LogTag, "mkdir failed on " + mTextDate.directory());
             File file;
             file = new File(mTextDate.directory(), mTextDate.filename());
             FileWriter fileWriter;
