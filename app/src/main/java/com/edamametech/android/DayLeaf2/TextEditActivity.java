@@ -121,6 +121,7 @@ public class TextEditActivity extends AppCompatActivity {
         mTextDate = new TextDate(mContext, new Date());
         mEditText = (EditText) findViewById(R.id.edit_text);
         loadText();
+        setTitle(mTextDate.filename());
 
         mEditText.requestFocus();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
