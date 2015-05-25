@@ -60,6 +60,10 @@ public class TextEditActivity extends AppCompatActivity {
             return new SimpleDateFormat(getString(R.string.filename_format), Locale.US).format(mDate);
         }
 
+        public final String backup_filename() {
+            return new SimpleDateFormat(getString(R.string.backup_filename_format), Locale.US).format(mDate);
+        }
+
         public String textTemplate() {
             return new SimpleDateFormat(getString(R.string.text_template_format), Locale.US).format(mDate);
         }
@@ -79,8 +83,18 @@ public class TextEditActivity extends AppCompatActivity {
         file = new File(mTextDate.directory(), mTextDate.filename());
         if (file.exists() && file.canRead()) {
             try {
+                File backfile;
+
+                // rename the target file as the back up file
+                backfile = new File(mTextDate.directory(),mTextDate.backup_filename());
+                if (!file.renameTo(backfile)) {
+                    backfile = file;    // refer to original file when rename is not successful
+                    file = null;
+                }
+
+                // read the back up file
                 BufferedReader bufferedReader;
-                bufferedReader = new BufferedReader(new FileReader(file));
+                bufferedReader = new BufferedReader(new FileReader(backfile));
                 StringBuilder stringBuilder;
                 stringBuilder = new StringBuilder();
                 String line;
@@ -91,6 +105,14 @@ public class TextEditActivity extends AppCompatActivity {
                 mEditText.setText(stringBuilder.toString());
                 bufferedReader.close();
                 mTextEdited = false;
+
+                // copy the content into the (now new) target file
+                if (file != null) {
+                    FileWriter fileWriter;
+                    fileWriter = new FileWriter(file);
+                    fileWriter.write(stringBuilder.toString());
+                    fileWriter.close();
+                }
             } catch (IOException e) {
                 Log.e(LogTag, e.toString());
             }
