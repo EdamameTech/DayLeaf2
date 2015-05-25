@@ -43,7 +43,7 @@ public class TextEditActivity extends AppCompatActivity {
     private class TextDate {
         Date mDate;
 
-        TextDate(Context c, Date d) {
+        TextDate(Date d) {
             mDate = d;
         }
 
@@ -62,7 +62,6 @@ public class TextEditActivity extends AppCompatActivity {
 
     }
 
-    private Context mContext;
     private EditText mEditText;
     private TextDate mTextDate;
 
@@ -117,8 +116,7 @@ public class TextEditActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        mContext = getBaseContext();
-        mTextDate = new TextDate(mContext, new Date());
+        mTextDate = new TextDate(new Date());
         mEditText = (EditText) findViewById(R.id.edit_text);
         loadText();
         setTitle(mTextDate.filename());
