@@ -130,6 +130,7 @@ public class TextEditActivity extends AppCompatActivity {
         mEditText.requestFocus();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        mEditText.setSelection(mEditText.getText().length());
     }
 
     @Override
