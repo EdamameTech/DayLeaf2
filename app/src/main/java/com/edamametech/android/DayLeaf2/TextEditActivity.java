@@ -51,46 +51,56 @@ public class TextEditActivity extends AppCompatActivity {
         private Date mDate;
         private Date mPreviousDate;
         private Date mNextDate;
+        private SimpleDateFormat mFileNameFormat;
 
         TextDate(Date d) {
             mDate = d;
+            mFileNameFormat = new SimpleDateFormat(getString(R.string.filename_format));
             mPreviousDate = null;
             mNextDate = null;
 
-            File app_directory;
-            app_directory = new File(directory());
-            String[] filenames;
-            filenames = app_directory.list();
-            if (filenames != null && filenames.length > 1) {
-                ArrayList<Date> dates;
-                dates = new ArrayList<>(filenames.length);
-                final SimpleDateFormat filename_format;
-                filename_format = new SimpleDateFormat(getString(R.string.filename_format));
-                for(String filename: filenames){
-                    try {
-                        dates.add(filename_format.parse(filename));
-                    } catch(java.text.ParseException e) {
-                        // ignore
-                    }
-                }
-                Collections.sort(dates);
+            Date current_date;
+            current_date = null;
+            try {
+                current_date = mFileNameFormat.parse(filename());
+            } catch (java.text.ParseException e) {
+                // we are maybe editing a generic file
+            }
 
-                Date current_date;
-                current_date = new Date(0);
-                try {
-                    current_date = filename_format.parse(filename());
-                } catch(java.text.ParseException e) {
-                    // should never occur
-                }
-                int current_index = -1;
-                for(Integer i = 0; i < dates.size(); i++) {
-                    if (current_date.compareTo(dates.get(i)) == 0) {
-                        current_index = i;
-                        break;
+            // find dates for files in the same directory just before and after current one
+            if (current_date != null) {
+                File app_directory;
+                app_directory = new File(directory());
+                String[] filenames;
+                filenames = app_directory.list();
+                if (filenames != null && filenames.length > 0) {
+                    for (String filename : filenames) {
+                        try {
+                            Date file_date;
+                            file_date = mFileNameFormat.parse(filename);
+                            int c;
+                            c = file_date.compareTo(current_date);
+                            if (c > 0) {
+                                if (mNextDate == null) {
+                                    mNextDate = file_date;
+                                } else if (file_date.compareTo(mNextDate) < 0) {
+                                    mNextDate = file_date;
+                                }
+                            } else if (c < 0) {
+                                if (mPreviousDate == null) {
+                                    mPreviousDate = file_date;
+                                } else {
+                                    if (file_date.compareTo(mPreviousDate) > 0) {
+                                        mPreviousDate = file_date;
+                                    }
+                                }
+                            }
+                        } catch (java.text.ParseException e) {
+                            // ignore the file
+                        }
                     }
                 }
-                if (current_index > 0) mPreviousDate = dates.get(current_index - 1);
-                if (current_index >= 0 && current_index < dates.size() - 1) mNextDate = dates.get(current_index + 1);
+                // TODO: mNextDate should be today when current_date is in the past
             }
         }
 
@@ -116,8 +126,13 @@ public class TextEditActivity extends AppCompatActivity {
         }
 
         // Date with existing file or null
-        public Date previousDate() { return mPreviousDate; }
-        public Date nextDate() { return mNextDate; }
+        public Date previousDate() {
+            return mPreviousDate;
+        }
+
+        public Date nextDate() {
+            return mNextDate;
+        }
     }
 
     private EditText mEditText;
@@ -132,7 +147,7 @@ public class TextEditActivity extends AppCompatActivity {
                 File backfile;
 
                 // rename the target file as the back up file
-                backfile = new File(mTextDate.directory(),mTextDate.backup_filename());
+                backfile = new File(mTextDate.directory(), mTextDate.backup_filename());
                 if (!file.renameTo(backfile)) {
                     backfile = file;    // refer to original file when rename is not successful
                     file = null;
