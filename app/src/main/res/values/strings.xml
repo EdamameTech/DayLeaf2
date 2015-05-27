@@ -2,7 +2,10 @@
 <resources>
 
     <string name="app_name">DayLeaf2</string>
-    <string name="action_send">Send</string>
+    <string name="action_edit_previous_date">Edit Previous Date</string>
+    <string name="action_edit_next_date">Edit Next Date</string>
+    <string name="action_edit_today">Edit Today</string>
+    <string name="action_send">Send to ...</string>
     <string name="filename_format">yyyyMMdd\'.txt\'</string>
     <string name="backup_filename_format">yyyyMMdd\'.back.txt\'</string>
     <string name="text_template_format">yyyy-MM-dd\n\n</string>

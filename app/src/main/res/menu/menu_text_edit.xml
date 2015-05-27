@@ -5,17 +5,17 @@
     <item
         android:id="@+id/action_edit_previous_date"
         android:icon="@android:drawable/ic_media_rew"
-        android:title="Edit Previous Date"
+        android:title="@string/action_edit_previous_date"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_edit_next_date"
         android:icon="@android:drawable/ic_media_ff"
-        android:title="Edit Next Date"
+        android:title="@string/action_edit_next_date"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_edit_today"
         android:icon="@android:drawable/ic_media_next"
-        android:title="Edit Today"
+        android:title="@string/action_edit_today"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_send"
