@@ -15,7 +15,6 @@ package com.edamametech.android.DayLeaf2;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -25,19 +24,14 @@ import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import com.edamametech.android.DayLeaf2.R;
-
 import android.os.Environment;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
@@ -48,27 +42,37 @@ public class TextEditActivity extends AppCompatActivity {
     private static final String LogTag = "DayLeaf2";
 
     private class TextDate {
-        private Date mDate;
+        private String mFilename;
+        private String mBackupFilename;
+        private String mTextTemplate;
         private Date mPreviousDate;
         private Date mNextDate;
-        private SimpleDateFormat mFileNameFormat;
 
         TextDate(Date d) {
-            mDate = d;
-            mFileNameFormat = new SimpleDateFormat(getString(R.string.filename_format));
+            SimpleDateFormat filenameFormat;
+            filenameFormat = new SimpleDateFormat(getString(R.string.filename_format));
+            mFilename = filenameFormat.format(d);
+            mBackupFilename = new SimpleDateFormat(getString(R.string.backup_filename_format), Locale.US).format(d);
+            mTextTemplate = new SimpleDateFormat(getString(R.string.text_template_format), Locale.US).format(d);
             mPreviousDate = null;
             mNextDate = null;
 
-            Date current_date;
-            current_date = null;
+            Date editing_file_date = null;
             try {
-                current_date = mFileNameFormat.parse(filename());
+                editing_file_date = filenameFormat.parse(mFilename);
             } catch (java.text.ParseException e) {
                 // we are maybe editing a generic file
             }
 
+            Date today_date = null;
+            try {
+                today_date = filenameFormat.parse(filenameFormat.format(new Date()));
+            } catch (java.text.ParseException e) {
+                Log.e(LogTag, "Cannot detect today from filename", e);
+            }
+
             // find dates for files in the same directory just before and after current one
-            if (current_date != null) {
+            if (editing_file_date != null) {
                 File app_directory;
                 app_directory = new File(directory());
                 String[] filenames;
@@ -77,9 +81,9 @@ public class TextEditActivity extends AppCompatActivity {
                     for (String filename : filenames) {
                         try {
                             Date file_date;
-                            file_date = mFileNameFormat.parse(filename);
+                            file_date = filenameFormat.parse(filename);
                             int c;
-                            c = file_date.compareTo(current_date);
+                            c = file_date.compareTo(editing_file_date);
                             if (c > 0) {
                                 if (mNextDate == null) {
                                     mNextDate = file_date;
@@ -100,7 +104,10 @@ public class TextEditActivity extends AppCompatActivity {
                         }
                     }
                 }
-                // TODO: mNextDate should be today when current_date is in the past
+
+                if (mNextDate == null && today_date != null && editing_file_date.compareTo(today_date) < 0) {
+                    mNextDate = today_date;
+                }
             }
         }
 
@@ -110,15 +117,15 @@ public class TextEditActivity extends AppCompatActivity {
         }
 
         public final String filename() {
-            return new SimpleDateFormat(getString(R.string.filename_format), Locale.US).format(mDate);
+            return mFilename;
         }
 
         public final String backup_filename() {
-            return new SimpleDateFormat(getString(R.string.backup_filename_format), Locale.US).format(mDate);
+            return mBackupFilename;
         }
 
         public String textTemplate() {
-            return new SimpleDateFormat(getString(R.string.text_template_format), Locale.US).format(mDate);
+            return mTextTemplate;
         }
 
         public Uri uri() {
