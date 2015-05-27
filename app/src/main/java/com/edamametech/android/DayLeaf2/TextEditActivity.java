@@ -145,26 +145,14 @@ public class TextEditActivity extends AppCompatActivity {
     private EditText mEditText;
     boolean mTextEdited;    // true when needs to be saved
     private TextDate mTextDate;
+    private Boolean mBackedUp;  // true once backup file is created
 
     private void loadText() {
-        File file;
-        file = new File(mTextDate.directory(), mTextDate.filename());
+        File file = new File(mTextDate.directory(), mTextDate.filename());
         if (file.exists() && file.canRead()) {
             try {
-                File backfile;
-
-                // rename the target file as the back up file
-                backfile = new File(mTextDate.directory(), mTextDate.backup_filename());
-                if (!file.renameTo(backfile)) {
-                    backfile = file;    // refer to original file when rename is not successful
-                    file = null;
-                }
-
-                // read the back up file
-                BufferedReader bufferedReader;
-                bufferedReader = new BufferedReader(new FileReader(backfile));
-                StringBuilder stringBuilder;
-                stringBuilder = new StringBuilder();
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+                StringBuilder stringBuilder = new StringBuilder();
                 String line;
                 while ((line = bufferedReader.readLine()) != null) {
                     stringBuilder.append(line);
@@ -173,14 +161,6 @@ public class TextEditActivity extends AppCompatActivity {
                 mEditText.setText(stringBuilder.toString());
                 bufferedReader.close();
                 mTextEdited = false;
-
-                // copy the content into the (now new) target file
-                if (file != null) {
-                    FileWriter fileWriter;
-                    fileWriter = new FileWriter(file);
-                    fileWriter.write(stringBuilder.toString());
-                    fileWriter.close();
-                }
             } catch (IOException e) {
                 Log.e(LogTag, "reading file", e);
             }
@@ -191,21 +171,38 @@ public class TextEditActivity extends AppCompatActivity {
     }
 
     private void saveText() {
-        try {
-            File appdir;
-            appdir = new File(mTextDate.directory());
-            if (!appdir.exists() && !appdir.mkdir())
-                Log.e(LogTag, "mkdir failed on " + mTextDate.directory());
-            File file;
-            file = new File(mTextDate.directory(), mTextDate.filename());
-            FileWriter fileWriter;
-            fileWriter = new FileWriter(file);
-            fileWriter.write(mEditText.getText().toString());
-            fileWriter.close();
-            mTextEdited = false;
-        } catch (IOException e) {
-            Log.e(LogTag, "saving file", e);
-        }
+        if (mTextEdited)
+            try {
+                File appdir;
+                appdir = new File(mTextDate.directory());
+                if (!appdir.exists() && !appdir.mkdir())
+                    Log.e(LogTag, "mkdir failed on " + mTextDate.directory());
+
+                File file;
+                file = new File(mTextDate.directory(), mTextDate.filename());
+
+                // rename the target file as the back up file
+                if (!mBackedUp) {
+                    File backfile;
+                    backfile = new File(mTextDate.directory(), mTextDate.backup_filename());
+                    if (backfile.exists() && !backfile.delete()) {
+                        Log.e(LogTag, "deleting " + mTextDate.backup_filename() + " failed");
+                    }
+                    if (!file.renameTo(backfile)) {
+                        Log.e(LogTag, "reaname to " + mTextDate.backup_filename() + " failed");
+                    }
+                    mBackedUp = true;
+                }
+
+                // write the new content
+                FileWriter fileWriter;
+                fileWriter = new FileWriter(file);
+                fileWriter.write(mEditText.getText().toString());
+                fileWriter.close();
+                mTextEdited = false;
+            } catch (IOException e) {
+                Log.e(LogTag, "saving file", e);
+            }
     }
 
     protected void loadContent(Date date) {
@@ -232,6 +229,7 @@ public class TextEditActivity extends AppCompatActivity {
         });
 
         loadText();
+        mBackedUp = false;
 
         mEditText.requestFocus();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -249,8 +247,7 @@ public class TextEditActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
-        if (mTextEdited) saveText();
+        saveText();
     }
 
     @Override
@@ -300,3 +297,4 @@ public class TextEditActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
+
