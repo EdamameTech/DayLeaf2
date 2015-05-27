@@ -182,7 +182,7 @@ public class TextEditActivity extends AppCompatActivity {
                     fileWriter.close();
                 }
             } catch (IOException e) {
-                Log.e(LogTag, e.toString());
+                Log.e(LogTag, "reading file", e);
             }
         } else {
             mEditText.setText(mTextDate.textTemplate());
@@ -204,7 +204,7 @@ public class TextEditActivity extends AppCompatActivity {
             fileWriter.close();
             mTextEdited = false;
         } catch (IOException e) {
-            Log.e(LogTag, e.toString());
+            Log.e(LogTag, "saving file", e);
         }
     }
 
