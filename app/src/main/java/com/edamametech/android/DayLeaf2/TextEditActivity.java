@@ -182,7 +182,7 @@ public class TextEditActivity extends AppCompatActivity {
                 file = new File(mTextDate.directory(), mTextDate.filename());
 
                 // rename the target file as the back up file
-                if (!mBackedUp) {
+                if (file.exists() && !mBackedUp) {
                     File backfile;
                     backfile = new File(mTextDate.directory(), mTextDate.backup_filename());
                     if (backfile.exists() && !backfile.delete()) {
