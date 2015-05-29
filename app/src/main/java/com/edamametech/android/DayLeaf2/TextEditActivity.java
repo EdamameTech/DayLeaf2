@@ -145,6 +145,7 @@ public class TextEditActivity extends AppCompatActivity {
     private EditText mEditText;
     boolean mTextEdited;    // true when needs to be saved
     private TextDate mTextDate;
+    private Boolean mNeedMoveToBottom;  // true for continue editing for today
     private Boolean mBackedUp;  // true once backup file is created
 
     private void loadText() {
@@ -205,8 +206,7 @@ public class TextEditActivity extends AppCompatActivity {
             }
     }
 
-    protected void loadContent(Date date) {
-        mTextDate = new TextDate(date);
+    protected void loadContent() {
         mEditText = (EditText) findViewById(R.id.edit_text);
         setTitle(mTextDate.filename());
         this.invalidateOptionsMenu();
@@ -231,14 +231,26 @@ public class TextEditActivity extends AppCompatActivity {
         loadText();
         mBackedUp = false;
 
-        mEditText.setSelection(mEditText.getText().length());
+        if (mNeedMoveToBottom) {
+            mEditText.setSelection(mEditText.getText().length());
+            mNeedMoveToBottom = false;
+        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text_edit);
-        loadContent(new Date());
+        mTextDate = new TextDate(new Date());
+        mNeedMoveToBottom = true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        loadContent();
+
     }
 
     @Override
@@ -278,17 +290,21 @@ public class TextEditActivity extends AppCompatActivity {
 
         if (id == R.id.action_edit_previous_date && mTextDate.previousDate() != null) {
             saveText();
-            loadContent(mTextDate.previousDate());
+            mTextDate = new TextDate(mTextDate.previousDate());
+            loadContent();
         }
 
         if (id == R.id.action_edit_next_date && mTextDate.nextDate() != null) {
             saveText();
-            loadContent(mTextDate.nextDate());
+            mTextDate = new TextDate(mTextDate.nextDate());
+            loadContent();
         }
 
         if (id == R.id.action_edit_today) {
             saveText();
-            loadContent(new Date());
+            mTextDate = new TextDate(new Date());
+            mNeedMoveToBottom = true;
+            loadContent();
         }
 
         return super.onOptionsItemSelected(item);
