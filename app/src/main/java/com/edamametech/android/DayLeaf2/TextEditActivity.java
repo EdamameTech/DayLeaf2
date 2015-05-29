@@ -161,14 +161,13 @@ public class TextEditActivity extends AppCompatActivity {
                 }
                 mEditText.setText(stringBuilder.toString());
                 bufferedReader.close();
-                mTextEdited = false;
             } catch (IOException e) {
                 Log.e(LogTag, "reading file", e);
             }
         } else {
             mEditText.setText(mTextDate.textTemplate());
-            mTextEdited = true;
         }
+        mTextEdited = false;
     }
 
     private void saveText() {
