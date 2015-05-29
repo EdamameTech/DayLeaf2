@@ -145,7 +145,7 @@ public class TextEditActivity extends AppCompatActivity {
     private EditText mEditText;
     boolean mTextEdited;    // true when needs to be saved
     private TextDate mTextDate;
-    private Boolean mNeedMoveToBottom;  // true for continue editing for today
+    private Boolean mNeedContent;  // true if text box is empty
     private Boolean mBackedUp;  // true once backup file is created
 
     private void loadText() {
@@ -230,11 +230,10 @@ public class TextEditActivity extends AppCompatActivity {
 
         loadText();
         mBackedUp = false;
+    }
 
-        if (mNeedMoveToBottom) {
-            mEditText.setSelection(mEditText.getText().length());
-            mNeedMoveToBottom = false;
-        }
+    protected void moveToBottom() {
+        mEditText.setSelection(mEditText.getText().length());
     }
 
     @Override
@@ -242,14 +241,17 @@ public class TextEditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text_edit);
         mTextDate = new TextDate(new Date());
-        mNeedMoveToBottom = true;
+        mNeedContent = true;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        loadContent();
+        if (mNeedContent) {
+            loadContent();
+            moveToBottom();
+            mNeedContent = false;
+        }
 
     }
 
@@ -303,8 +305,8 @@ public class TextEditActivity extends AppCompatActivity {
         if (id == R.id.action_edit_today) {
             saveText();
             mTextDate = new TextDate(new Date());
-            mNeedMoveToBottom = true;
             loadContent();
+            moveToBottom();
         }
 
         return super.onOptionsItemSelected(item);
