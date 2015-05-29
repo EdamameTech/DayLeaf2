@@ -93,10 +93,8 @@ public class TextEditActivity extends AppCompatActivity {
                             } else if (c < 0) {
                                 if (mPreviousDate == null) {
                                     mPreviousDate = file_date;
-                                } else {
-                                    if (file_date.compareTo(mPreviousDate) > 0) {
-                                        mPreviousDate = file_date;
-                                    }
+                                } else if (file_date.compareTo(mPreviousDate) > 0) {
+                                    mPreviousDate = file_date;
                                 }
                             }
                         } catch (java.text.ParseException e) {
