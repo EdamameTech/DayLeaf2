@@ -54,7 +54,6 @@ public class TextEditActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        Log.d(LogTag, "onSavedInstanceState()");
         savedInstanceState.putParcelable(STATE_TEXTFILEINFO, mTextFileInfo);
         savedInstanceState.putBoolean(STATE_TEXTEDITED, mTextEdited);
         savedInstanceState.putBoolean(STATE_BACKEDUP, mBackedUp);
@@ -63,7 +62,6 @@ public class TextEditActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(LogTag, "onCreate()");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text_edit);
 
@@ -82,7 +80,6 @@ public class TextEditActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        Log.d(LogTag, "onResume()");
         super.onResume();
 
         mEditText = (EditText) findViewById(R.id.edit_text);
