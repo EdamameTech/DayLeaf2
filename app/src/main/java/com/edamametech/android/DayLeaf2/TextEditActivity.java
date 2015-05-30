@@ -12,28 +12,22 @@ the License, or (at your option) any later version.
 
 package com.edamametech.android.DayLeaf2;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-
-import android.os.Environment;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import android.util.Log;
 
@@ -41,113 +35,67 @@ public class TextEditActivity extends AppCompatActivity {
 
     private static final String LogTag = "DayLeaf2";
 
-    private class TextDate {
-        private String mFilename;
-        private String mBackupFilename;
-        private String mTextTemplate;
-        private Date mPreviousDate;
-        private Date mNextDate;
+    private EditText mEditText;
+    private TextFileInfo mTextFileInfo;
+    private final String STATE_TEXTFILEINFO = "textFileInfo";
 
-        TextDate(Date d) {
-            SimpleDateFormat filenameFormat;
-            filenameFormat = new SimpleDateFormat(getString(R.string.filename_format));
-            mFilename = filenameFormat.format(d);
-            mBackupFilename = new SimpleDateFormat(getString(R.string.backup_filename_format), Locale.US).format(d);
-            mTextTemplate = new SimpleDateFormat(getString(R.string.text_template_format), Locale.US).format(d);
-            mPreviousDate = null;
-            mNextDate = null;
+    private Boolean mTextEdited;    // true when needs to be saved
+    private Boolean mBackedUp;  // true once backup file is created
+    private final String STATE_TEXTEDITED = "textEdited";
+    private final String STATE_BACKEDUP = "backedUp";
 
-            Date editing_file_date = null;
-            try {
-                editing_file_date = filenameFormat.parse(mFilename);
-            } catch (java.text.ParseException e) {
-                // we are maybe editing a generic file
-            }
 
-            Date today_date = null;
-            try {
-                today_date = filenameFormat.parse(filenameFormat.format(new Date()));
-            } catch (java.text.ParseException e) {
-                Log.e(LogTag, "Cannot detect today from filename", e);
-            }
+    private Boolean mNeedContent;  // true if text box is empty
 
-            // find dates for files in the same directory just before and after current one
-            if (editing_file_date != null) {
-                File app_directory;
-                app_directory = new File(directory());
-                String[] filenames;
-                filenames = app_directory.list();
-                if (filenames != null && filenames.length > 0) {
-                    for (String filename : filenames) {
-                        try {
-                            Date file_date;
-                            file_date = filenameFormat.parse(filename);
-                            int c;
-                            c = file_date.compareTo(editing_file_date);
-                            if (c > 0) {
-                                if (mNextDate == null) {
-                                    mNextDate = file_date;
-                                } else if (file_date.compareTo(mNextDate) < 0) {
-                                    mNextDate = file_date;
-                                }
-                            } else if (c < 0) {
-                                if (mPreviousDate == null) {
-                                    mPreviousDate = file_date;
-                                } else if (file_date.compareTo(mPreviousDate) > 0) {
-                                    mPreviousDate = file_date;
-                                }
-                            }
-                        } catch (java.text.ParseException e) {
-                            // ignore the file
-                        }
-                    }
-                }
+    private String appDirectory() {
+        return Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS).toString() + "/" + getString(R.string.app_name);
+    }
 
-                if (mNextDate == null && today_date != null && editing_file_date.compareTo(today_date) < 0) {
-                    mNextDate = today_date;
-                }
-            }
-        }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        Log.d(LogTag, "onSavedInstanceState()");
+        savedInstanceState.putParcelable(STATE_TEXTFILEINFO, mTextFileInfo);
+        savedInstanceState.putBoolean(STATE_TEXTEDITED, mTextEdited);
+        savedInstanceState.putBoolean(STATE_BACKEDUP, mBackedUp);
+        super.onSaveInstanceState(savedInstanceState);
+    }
 
-        public final String directory() {
-            return Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS).toString() + "/" + getString(R.string.app_name);
-        }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        Log.d(LogTag, "onCreate()");
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_text_edit);
 
-        public final String filename() {
-            return mFilename;
-        }
-
-        public final String backup_filename() {
-            return mBackupFilename;
-        }
-
-        public String textTemplate() {
-            return mTextTemplate;
-        }
-
-        public Uri uri() {
-            return Uri.parse("file://" + directory() + "/" + filename());
-        }
-
-        // Date with existing file or null
-        public Date previousDate() {
-            return mPreviousDate;
-        }
-
-        public Date nextDate() {
-            return mNextDate;
+        if (savedInstanceState == null) {
+            mTextFileInfo = new TextFileInfo(appDirectory(), new Date(), getString(R.string.filename_format));
+            mTextEdited = false;
+            mBackedUp = false;
+            mNeedContent = true;
+        } else {
+            mTextFileInfo = savedInstanceState.getParcelable(STATE_TEXTFILEINFO);
+            mTextEdited = savedInstanceState.getBoolean(STATE_TEXTEDITED);
+            mBackedUp = savedInstanceState.getBoolean(STATE_BACKEDUP);
+            mNeedContent = false;   // mEditText should already have text loaded
         }
     }
 
-    private EditText mEditText;
-    boolean mTextEdited;    // true when needs to be saved
-    private TextDate mTextDate;
-    private Boolean mNeedContent;  // true if text box is empty
-    private Boolean mBackedUp;  // true once backup file is created
+    @Override
+    protected void onResume() {
+        Log.d(LogTag, "onResume()");
+        super.onResume();
+
+        mEditText = (EditText) findViewById(R.id.edit_text);
+        if (mNeedContent) {
+            loadText();
+            moveToBottom();
+            mNeedContent = false;
+        }
+        setTitle(mTextFileInfo.filename());
+    }
 
     private void loadText() {
-        File file = new File(mTextDate.directory(), mTextDate.filename());
+        File file = new File(mTextFileInfo.directory(), mTextFileInfo.filename());
         if (file.exists() && file.canRead()) {
             try {
                 BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
@@ -163,51 +111,13 @@ public class TextEditActivity extends AppCompatActivity {
                 Log.e(LogTag, "reading file", e);
             }
         } else {
-            mEditText.setText(mTextDate.textTemplate());
+            mEditText.setText(mTextFileInfo.textTemplate(getString(R.string.filename_format), getString(R.string.text_template_format)));
         }
-        mTextEdited = false;
-    }
+        mBackedUp = false;
 
-    private void saveText() {
-        if (mTextEdited)
-            try {
-                File appdir;
-                appdir = new File(mTextDate.directory());
-                if (!appdir.exists() && !appdir.mkdir())
-                    Log.e(LogTag, "mkdir failed on " + mTextDate.directory());
-
-                File file;
-                file = new File(mTextDate.directory(), mTextDate.filename());
-
-                // rename the target file as the back up file
-                if (file.exists() && !mBackedUp) {
-                    File backfile;
-                    backfile = new File(mTextDate.directory(), mTextDate.backup_filename());
-                    if (backfile.exists() && !backfile.delete()) {
-                        Log.e(LogTag, "deleting " + mTextDate.backup_filename() + " failed");
-                    }
-                    if (!file.renameTo(backfile)) {
-                        Log.e(LogTag, "reaname to " + mTextDate.backup_filename() + " failed");
-                    }
-                    mBackedUp = true;
-                }
-
-                // write the new content
-                FileWriter fileWriter;
-                fileWriter = new FileWriter(file);
-                fileWriter.write(mEditText.getText().toString());
-                fileWriter.close();
-                mTextEdited = false;
-            } catch (IOException e) {
-                Log.e(LogTag, "saving file", e);
-            }
-    }
-
-    protected void loadContent() {
-        mEditText = (EditText) findViewById(R.id.edit_text);
-        setTitle(mTextDate.filename());
         this.invalidateOptionsMenu();
 
+        mTextEdited = false;
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -224,32 +134,44 @@ public class TextEditActivity extends AppCompatActivity {
                 mTextEdited = true;
             }
         });
+    }
 
-        loadText();
-        mBackedUp = false;
+    private void saveText() {
+        if (mTextEdited)
+            try {
+                File directory = new File(mTextFileInfo.directory());
+                if (!directory.exists() && !directory.mkdir())
+                    Log.e(LogTag, "mkdir failed on " + mTextFileInfo.directory());
+
+                File file;
+                file = new File(mTextFileInfo.directory(), mTextFileInfo.filename());
+
+                // rename the target file as the back up file
+                if (file.exists() && !mBackedUp) {
+                    String backup_filename = mTextFileInfo.backup_filename(getString(R.string.filename_format), getString(R.string.backup_filename_format));
+                    File backfile = new File(mTextFileInfo.directory(), backup_filename);
+                    if (backfile.exists() && !backfile.delete()) {
+                        Log.e(LogTag, "deleting " + backup_filename + " failed");
+                    }
+                    if (!file.renameTo(backfile)) {
+                        Log.e(LogTag, "reaname to " + backup_filename + " failed");
+                    }
+                    mBackedUp = true;
+                }
+
+                // write the new content
+                FileWriter fileWriter;
+                fileWriter = new FileWriter(file);
+                fileWriter.write(mEditText.getText().toString());
+                fileWriter.close();
+                mTextEdited = false;
+            } catch (IOException e) {
+                Log.e(LogTag, "saving file", e);
+            }
     }
 
     protected void moveToBottom() {
         mEditText.setSelection(mEditText.getText().length());
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_text_edit);
-        mTextDate = new TextDate(new Date());
-        mNeedContent = true;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (mNeedContent) {
-            loadContent();
-            moveToBottom();
-            mNeedContent = false;
-        }
-
     }
 
     @Override
@@ -263,8 +185,8 @@ public class TextEditActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_text_edit, menu);
 
-        menu.findItem(R.id.action_edit_previous_date).setEnabled(mTextDate.previousDate() != null);
-        menu.findItem(R.id.action_edit_next_date).setEnabled(mTextDate.nextDate() != null);
+        menu.findItem(R.id.action_edit_previous_date).setEnabled(mTextFileInfo.previousDate(getString(R.string.filename_format)) != null);
+        menu.findItem(R.id.action_edit_next_date).setEnabled(mTextFileInfo.nextDate(getString(R.string.filename_format)) != null);
         return true;
     }
 
@@ -281,28 +203,28 @@ public class TextEditActivity extends AppCompatActivity {
             Intent intent;
             intent = new Intent(Intent.ACTION_SEND);
             intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_STREAM, mTextDate.uri());
+            intent.putExtra(Intent.EXTRA_STREAM, mTextFileInfo.uri());
             intent.putExtra(Intent.EXTRA_TEXT, mEditText.getText());
             startActivity(intent);
             return true;
         }
 
-        if (id == R.id.action_edit_previous_date && mTextDate.previousDate() != null) {
+        if (id == R.id.action_edit_previous_date && mTextFileInfo.previousDate(getString(R.string.filename_format)) != null) {
             saveText();
-            mTextDate = new TextDate(mTextDate.previousDate());
-            loadContent();
+            mTextFileInfo = new TextFileInfo(appDirectory(), mTextFileInfo.previousDate(getString(R.string.filename_format)), getString(R.string.filename_format));
+            saveText();
         }
 
-        if (id == R.id.action_edit_next_date && mTextDate.nextDate() != null) {
+        if (id == R.id.action_edit_next_date && mTextFileInfo.nextDate(getString(R.string.filename_format)) != null) {
             saveText();
-            mTextDate = new TextDate(mTextDate.nextDate());
-            loadContent();
+            mTextFileInfo = new TextFileInfo(appDirectory(), mTextFileInfo.nextDate(getString(R.string.filename_format)), getString(R.string.filename_format));
+            saveText();
         }
 
         if (id == R.id.action_edit_today) {
             saveText();
-            mTextDate = new TextDate(new Date());
-            loadContent();
+            mTextFileInfo = new TextFileInfo(appDirectory(), new Date(), getString(R.string.filename_format));
+            saveText();
             moveToBottom();
         }
 
