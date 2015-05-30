@@ -100,32 +100,40 @@ public class TextFileInfo implements Parcelable {
 
     private void scanFiles(String filename_format) {
         mScannedFiles = true;
-        Date date = parseFilename(filename_format);
-        if (date == null) return;
+        SimpleDateFormat parser = new SimpleDateFormat(filename_format);
+        Date date;
+        try {
+            date = parser.parse(mFilename);
+        } catch (java.text.ParseException e) {
+            return;
+        }
 
         File directory = new File(mDirname);
         String[] filenames = directory.list();
         if (filenames == null) return;
         for (String filename : filenames) {
-            Date file_date = parseFilename(filename_format);
-            if (file_date != null) {
-                int c = file_date.compareTo(date);
-                if (c > 0) {
-                    if (mNextDate == null) {
-                        mNextDate = file_date;
-                    } else if (file_date.compareTo(mNextDate) < 0) {
-                        mNextDate = file_date;
-                    }
-                } else if (c < 0) {
-                    if (mPreviousDate == null) {
-                        mPreviousDate = file_date;
-                    } else if (file_date.compareTo(mPreviousDate) > 0) {
-                        mPreviousDate = file_date;
+            try {
+                Date file_date = parser.parse(filename);
+                if (file_date != null) {
+                    int c = file_date.compareTo(date);
+                    if (c > 0) {
+                        if (mNextDate == null) {
+                            mNextDate = file_date;
+                        } else if (file_date.compareTo(mNextDate) < 0) {
+                            mNextDate = file_date;
+                        }
+                    } else if (c < 0) {
+                        if (mPreviousDate == null) {
+                            mPreviousDate = file_date;
+                        } else if (file_date.compareTo(mPreviousDate) > 0) {
+                            mPreviousDate = file_date;
+                        }
                     }
                 }
+            } catch (java.text.ParseException e) {
+                // ignore the file
             }
         }
-
         if (mNextDate == null) {
             try {
                 SimpleDateFormat formatter = new SimpleDateFormat(filename_format, Locale.US);
