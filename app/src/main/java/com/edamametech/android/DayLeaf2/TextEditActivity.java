@@ -91,6 +91,10 @@ public class TextEditActivity extends AppCompatActivity {
             moveToBottom();
             mNeedContent = false;
         }
+        prepareUI();
+    }
+
+    private void prepareUI() {
         setTitle(mTextFileInfo.filename());
         mTextEdited = false;
         mEditText.addTextChangedListener(new TextWatcher() {
@@ -210,19 +214,22 @@ public class TextEditActivity extends AppCompatActivity {
         if (id == R.id.action_edit_previous_date && mTextFileInfo.previousDate(getString(R.string.filename_format)) != null) {
             saveText();
             mTextFileInfo = new TextFileInfo(appDirectory(), mTextFileInfo.previousDate(getString(R.string.filename_format)), getString(R.string.filename_format));
-            saveText();
+            loadText();
+            prepareUI();
         }
 
         if (id == R.id.action_edit_next_date && mTextFileInfo.nextDate(getString(R.string.filename_format)) != null) {
             saveText();
             mTextFileInfo = new TextFileInfo(appDirectory(), mTextFileInfo.nextDate(getString(R.string.filename_format)), getString(R.string.filename_format));
-            saveText();
+            loadText();
+            prepareUI();
         }
 
         if (id == R.id.action_edit_today) {
             saveText();
             mTextFileInfo = new TextFileInfo(appDirectory(), new Date(), getString(R.string.filename_format));
-            saveText();
+            loadText();
+            prepareUI();
             moveToBottom();
         }
 
