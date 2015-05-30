@@ -92,6 +92,24 @@ public class TextEditActivity extends AppCompatActivity {
             mNeedContent = false;
         }
         setTitle(mTextFileInfo.filename());
+        mTextEdited = false;
+        mEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // do nothing
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // do nothing
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mTextEdited = true;
+            }
+        });
+        this.invalidateOptionsMenu();
     }
 
     private void loadText() {
@@ -114,26 +132,6 @@ public class TextEditActivity extends AppCompatActivity {
             mEditText.setText(mTextFileInfo.textTemplate(getString(R.string.filename_format), getString(R.string.text_template_format)));
         }
         mBackedUp = false;
-
-        this.invalidateOptionsMenu();
-
-        mTextEdited = false;
-        mEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // do nothing
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // do nothing
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                mTextEdited = true;
-            }
-        });
     }
 
     private void saveText() {
