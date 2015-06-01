@@ -6,10 +6,10 @@ android {
 
     defaultConfig {
         applicationId "com.edamametech.android.dayleaf2"
-        minSdkVersion 19
+        minSdkVersion 14
         targetSdkVersion 22
         versionCode 7
-        versionName "0.4.3"
+        versionName "0.5"
     }
     buildTypes {
         release {
