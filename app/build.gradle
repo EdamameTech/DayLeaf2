@@ -8,7 +8,7 @@ android {
         applicationId "com.edamametech.android.dayleaf2"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 7
+        versionCode 8
         versionName "0.5"
     }
     buildTypes {
