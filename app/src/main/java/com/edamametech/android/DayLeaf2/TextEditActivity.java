@@ -34,6 +34,7 @@ import android.util.Log;
 public class TextEditActivity extends AppCompatActivity {
 
     private static final String LogTag = "DayLeaf2";
+    private static final Boolean DEBUG = true;
 
     private EditText mEditText;
     private TextFileInfo mTextFileInfo;
@@ -54,6 +55,7 @@ public class TextEditActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        if (DEBUG) Log.d(LogTag, "onSaveInstanceState()");
         savedInstanceState.putParcelable(STATE_TEXTFILEINFO, mTextFileInfo);
         savedInstanceState.putBoolean(STATE_TEXTEDITED, mTextEdited);
         savedInstanceState.putBoolean(STATE_BACKEDUP, mBackedUp);
@@ -62,9 +64,11 @@ public class TextEditActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (DEBUG) Log.d(LogTag, "onCreate(" + (savedInstanceState == null ? "null)" : "with savedInstanceState)"));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text_edit);
 
+        if (DEBUG) Log.d(LogTag, "mNeedContent = " + (mNeedContent == null ? "null" : mNeedContent.toString()));
         if (savedInstanceState == null) {
             mTextFileInfo = new TextFileInfo(appDirectory(), new Date(), getString(R.string.filename_format));
             mTextEdited = false;
@@ -80,8 +84,10 @@ public class TextEditActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        if (DEBUG) Log.d(LogTag, "onResume()");
         super.onResume();
 
+        if (DEBUG) Log.d(LogTag, "mNeedContent = " + (mNeedContent == null ? "null" : mNeedContent.toString()));
         mEditText = (EditText) findViewById(R.id.edit_text);
         if (mNeedContent) {
             loadText();
@@ -175,6 +181,8 @@ public class TextEditActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        if (DEBUG) Log.d(LogTag, "onPause()");
+
         super.onPause();
         saveText();
     }
