@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.edamametech.android.DayLeaf2.TextEditActivity">
+    tools:context="com.edamametech.android.dayleaf2.TextEditActivity">
 
     <EditText
         android:id="@+id/edit_text"

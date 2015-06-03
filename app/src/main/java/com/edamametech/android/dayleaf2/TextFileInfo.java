@@ -10,7 +10,7 @@ the License, or (at your option) any later version.
 
  */
 
-package com.edamametech.android.DayLeaf2;
+package com.edamametech.android.dayleaf2;
 
 import android.net.Uri;
 import android.os.Parcel;

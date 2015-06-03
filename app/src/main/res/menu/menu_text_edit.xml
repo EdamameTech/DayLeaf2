@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.edamametech.android.DayLeaf2.TextEditActivity">
+    tools:context="com.edamametech.android.dayleaf2.TextEditActivity">
     <item
         android:id="@+id/action_edit_previous_date"
         android:icon="@android:drawable/ic_media_rew"
